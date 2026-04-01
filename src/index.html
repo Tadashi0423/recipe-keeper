@@ -1,39 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Keeper</title>
   </head>
 
   <body>
-    <main class="container">
-      <h1>Welcome to Tauri</h1>
-
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
+    <header>
+      <h1>Recipe Keeper</h1>
+      <div class="header-actions">
+        <button id="add-recipe-btn">+ Add Recipe</button>
       </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+    </header>
 
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
+    <main>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search recipes...">
+        <button id="search-btn">Search</button>
+      </div>
+
+      <div id="recipe-grid" class="recipe-grid">
+        <!-- Recipe cards will be inserted here -->
+      </div>
     </main>
+
+    <!-- Add/Edit Recipe Modal -->
+    <div id="recipe-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">x</span>
+        <h2 id="modal-title">Add Recipe</h2>
+        <form id="recipe-form">
+          <input type="hidden" id="recipe-id">
+
+          <label for="title">Title *</label>
+          <input type="text" id="title" required>
+
+          <label for="url">URL</label>
+          <input type="text" id="url">
+
+          <label for="cuisine">Cuisine</label>
+          <input type="text" id="cuisine">
+
+          <label for="cooking_time">Cooking Time (minutes)</label>
+          <input type="number" id="cooking_time">
+
+          <label for="servings">Servings</label>
+          <input type="number" id="servings">
+
+          <label for="ingredients">Ingredients (comma separated)</label>
+          <input type="text" id="ingredients" placeholder="chicken, rice, soy sauce,...">
+
+          <label for="instructions">Instructions</label>
+          <textarea id="instructions" rows="4"></textarea>
+
+          <button type="submit" class="btn-primary">Save Recipe</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="main.js" defer></script>
   </body>
 </html>

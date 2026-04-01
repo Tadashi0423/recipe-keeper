@@ -13,6 +13,22 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// CORS middleware
+func withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	// Connect to database
 	dbPath := "recipe.db"
@@ -29,22 +45,31 @@ func main() {
 	// Create router
 	router := mux.NewRouter()
 
-	// Register routes
+	// IMPORTANT: Register specific routes BEFORE /{id} routes
+	// Order matters in gorilla/mux - first match wins
+	
+	// GET routes
 	router.HandleFunc("/recipes", handlers.GetAllRecipes).Methods(http.MethodGet)
-	router.HandleFunc("/recipes/{id}", handlers.GetRecipeByID).Methods(http.MethodGet)
-	router.HandleFunc("/recipes", handlers.CreateRecipe).Methods(http.MethodPost)
-	router.HandleFunc("/recipes/{id}", handlers.UpdateRecipe).Methods(http.MethodPut)
-	router.HandleFunc("/recipes/{id}", handlers.DeleteRecipe).Methods(http.MethodDelete)
 	router.HandleFunc("/recipes/search", handlers.SearchRecipes).Methods(http.MethodGet)
 	router.HandleFunc("/recipes/cuisine/{cuisine}", handlers.GetRecipesByCuisine).Methods(http.MethodGet)
+	router.HandleFunc("/recipes/{id}", handlers.GetRecipeByID).Methods(http.MethodGet)
 
-	// Start server
+	// POST route
+	router.HandleFunc("/recipes", handlers.CreateRecipe).Methods(http.MethodPost)
+
+	// PUT route
+	router.HandleFunc("/recipes/{id}", handlers.UpdateRecipe).Methods(http.MethodPut)
+
+	// DELETE route
+	router.HandleFunc("/recipes/{id}", handlers.DeleteRecipe).Methods(http.MethodDelete)
+
+	// Start server with CORS wrapped around router
 	port := ":8080"
 	log.Printf("Server starting on http://localhost%s", port)
 
 	// Graceful shutdown
 	go func() {
-		if err := http.ListenAndServe(port, router); err != nil {
+		if err := http.ListenAndServe(port, withCORS(router)); err != nil {
 			log.Fatalf("Server failed: %v", err)
 		}
 	}()
@@ -55,5 +80,4 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
-
 }

@@ -1,0 +1,6 @@
+cd recipe-keeper
+npm install
+cd backend
+go mod tidy
+go build -o recipe-keeper.exe
+Then resume development!
